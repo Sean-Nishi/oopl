@@ -1,0 +1,69 @@
+#Sean Nishi
+#9/23/2021
+#Homework 1 Part 3
+
+##############################################################
+"""displays shop menu and receives menu selection from user"""
+def menu(userCart):
+	#display menu
+	print(f"Welcome to the General Provisions Store!")
+	print(f"What can I get you today")
+	i = 0
+	for item in shopInventory:
+		print(f"{i}. {item['name']}: {item['price']} gold pieces")
+		i=i+1
+
+	#user input
+	userInput = input("Enter 0-3 or q to end> ")
+	#quit check
+	if(userInput == "q"):
+		return True
+
+	#input checker
+	intUserInput = int(userInput)
+	while(intUserInput < 0 or intUserInput > len(shopInventory)):
+		userInput = input("ERROR: invalid input.\nEnter 0-3 or q to end> ")
+		#quit check
+		if(userInput == "q"):
+			return True
+		intUserInput = int(userInput)
+
+	print(f"Got it. You selected {shopInventory[intUserInput]['name']}\n")
+	userCart.append(shopInventory[intUserInput])
+	return False
+
+###############################################################
+"""displays all items in userCart then prints total price"""
+def displayReceipt(userCart):
+	totalPrice = 0
+	print(f"\nOk, here is your receipt.")
+	for item in userCart:
+		print(f"{item['name']}: {item['price']} gold pieces")
+		totalPrice += item['price']
+	print(f"Thanks. Today's Total is {totalPrice} gold pieces.")
+
+###############################################################
+
+#a list of the items in the shop
+#each item is a dictionary
+shopInventory = []
+
+#items sold in shop
+item1 = {"name":"Food Rations", "price":6}
+item2 = {"name":"Water Flask", "price":3}
+item3 = {"name":"Dagger", "price":12}
+item4 = {"name":"Helmet", "price":32}
+
+shopInventory.append(item1)
+shopInventory.append(item2)
+shopInventory.append(item3)
+shopInventory.append(item4)
+
+#list of items user selected
+userCart = []
+quit = False
+
+#loop until user quits
+while(quit is not True):
+	quit = menu(userCart)
+displayReceipt(userCart)

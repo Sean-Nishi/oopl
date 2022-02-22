@@ -1,0 +1,228 @@
+#Sean Nishi
+#9/23/2021
+#Homework 1 Part 4 Text-Based Adventure Game
+
+
+"""
+	<--->Pasture--->
+Forest<--->Crossroad<--->Small House<--->house interior
+	^--->Gate
+
+"""
+##########################################################################
+#classes for each location, should do it via template...
+
+class Pasture:
+	name = "Pasture"
+	description = "There are a few cows grazing on the grass.\nThere is a forest to the west, a small house to the east, and a road south to the crossroads."
+	validActions = ["south", "east", "west"]
+
+	def getName(self):
+		return self.name
+
+	def getDescription(self):
+		return self.description
+
+	"""returns index of next state or -1 if no change"""
+	def move(self, inputAction):
+		#check if we move
+		if inputAction in self.validActions:
+			#move to that state
+			if inputAction == "south":
+				#change state to 'crossroads'
+				return 0
+			elif inputAction == "east":
+				#change state to 'small house'
+				return 4
+			elif inputAction == "west":
+				#change state to 'forest'
+				return 2
+		return -1
+
+class Crossroads:
+	name = "Crossroads"
+	description = "There is a pasture to the north, a gate to the south, a small house to the east, and a forest to the west."
+	validActions = ["north", "south", "east", "west"]
+
+	def getName(self):
+		return self.name
+
+	def getDescription(self):
+		return self.description
+
+	"""returns index of next state or -1 if no change"""
+	def move(self, inputAction):
+		#check if we move
+		if inputAction in self.validActions:
+			#move to that state
+			if inputAction == "north":
+				#change state to 'Pasture'
+				return 1
+			elif inputAction == 'south':
+				#change state to 'Gate'
+				return 3
+			elif inputAction == 'east':
+				#change state to 'SmallHouse'
+				return 4
+			elif inputAction == 'west':
+				#change state to 'Forest'
+				return 2
+		return -1
+
+class Forest:
+	name = "Forest"
+	description = "You feel as though something is watching you...\nThere is a road to the north to a pasture, a winding path south towards a gate, and the road east to the crossroads."
+	validActions = ["north", "south", "east"]
+
+	def getName(self):
+		return self.name
+
+	def getDescription(self):
+		return self.description
+
+	"""returns index of next state or -1 if no change"""
+	def move(self, inputAction):
+		if inputAction in self.validActions:
+			#move to that state
+			if inputAction == "north":
+				#change state to 'Pasture'
+				return 1
+			elif inputAction == "south":
+				#change state to 'Gate'
+				return 3
+			elif inputAction == "east":
+				#change state to 'Crossroads'
+				return 0
+		return -1
+
+class Gate:
+	name = "Gate"
+	description = "The walls impossible to scale and extend for as far as you can see.\nYou cannot proceed further.\nThere is a road north to the crossroads and a winding path west towards a forest."
+	validActions = ["north", "west"]
+
+	def getName(self):
+		return self.name
+
+	def getDescription(self):
+		return self.description
+
+	"""returns index of next state or -1 if no change"""
+	def move(self, inputAction):
+		if inputAction in self.validActions:
+			#move to that state
+			if inputAction == "north":
+				#change state to 'Crossroads'
+				return 0
+			elif inputAction == "west":
+				#change state to 'Forest'
+				return 2
+		return -1
+
+class SmallHouse:
+	name = "Small House"
+	description = "The house is made of cobble and is covered in vines.\nThere is a door on the east side of the house and the road west back towards the crossroads."
+	validActions = ["east", "west"]
+
+	def getName(self):
+		return self.name
+
+	def getDescription(self):
+		return self.description
+
+	"""returns index of next state or -1 if no change"""
+	def move(self, inputAction):
+		if inputAction in self.validActions:
+			#move to that state
+			if inputAction == "east":
+				#move to state 'SmallHouseInterior'
+				return 5
+			elif inputAction == "west":
+				#move to state 'Crossroads'
+				return 0
+		return -1
+
+class SmallHouseInterior:
+	name = "Small House Interior"
+	description = "Inside the house there is a fireplace with a pot of bubbling liquid.\nLooks like someone was here recently.\nThe door to outside is to the west."
+	validActions = ["west"]
+
+	def getName(self):
+		return self.name
+
+	def getDescription(self):
+		return self.description
+
+	"""returns index of next state or -1 if no change"""
+	def move(self, inputAction):
+		if inputAction in self.validActions:
+			#move to that state
+			if inputAction == "west":
+				#move to state 'SmallHouseInterior'
+				return 4
+		return -1
+
+###########################################################################
+#class for the game itself.
+class GameStateMachine:
+	#vars
+	currentLocation = 0
+	locations = [Crossroads, Pasture, Forest, Gate, SmallHouse, SmallHouseInterior]
+	allActions = ["north", "south", "east", "west", "look", "quit"]
+
+	def __init__(self):
+		print("initialized GameStateMachine...")
+
+	#methods
+	"""Starts the game loop"""
+	def start(self):
+		print("Welcome to my text adventure game. Enjoy!!\n")
+		print("The commands are: 'north', 'south', 'east', 'west', 'look', and 'quit'.")
+		#game loop
+		while(True):
+			#output info to player
+			self.displayDescription()
+			#get user action
+			userInput = self.getUserAction()
+			self.doAction(userInput)
+
+	"""Prints out description of the location user is at"""
+	def displayDescription(self):
+		tempLoc = self.locations[self.currentLocation]
+		print(f"\nYou are standing in a {tempLoc.getName(tempLoc)}")
+		print(f"{tempLoc.getDescription(tempLoc)}")
+
+	"""Receives user input and validates it. Returns valid input"""
+	def getUserAction(self):
+		userInput = input("What do you do: ").lower()
+		while(userInput not in self.allActions):
+			userInput = input("ERROR: invalid input. Try again.\n").lower()
+		return userInput
+
+	"""Takes user input action and applies it to the current location"""
+	def doAction(self, userInput):
+		#quit check
+		if userInput == "quit":
+			print("Thank you for playing. Goodbye\n")
+			exit(0)
+		#returns, first thing in loop is to display description
+		elif userInput == "look":
+			return
+		#check if we move to new state
+		else:
+			#move to new location or stay stationary
+			currLocation = self.locations[self.currentLocation]
+			newLocation = currLocation.move(currLocation, userInput)
+			if newLocation == -1:
+				return
+			else:
+				self.currentLocation = newLocation
+
+#####################################################################
+
+def main():
+	game = GameStateMachine()
+	game.start()
+
+if __name__ == "__main__":
+	main()
+
